@@ -48,10 +48,11 @@ table :diary
 
 
 待辦:
--將 tabelwidget 最上方欄位的名稱，改成從資料庫獲取後填入。
--searchsequence.ui。tablewidget欄位除日期外應填滿空白區域。
--複製貼上後的字會保留原始複製的格式，應讓裡面的字體保持一致。
--嘗試將db連接到雲端。
+-新增一個 PprojectDiary 板塊，用來記錄不同 project 的進程和待辦事項。
+
+失敗:
+-加密 db 或 table。(失敗:Qt 不支援 database 加密)。
+-將 .db 上傳到雲端。
 
 */
 

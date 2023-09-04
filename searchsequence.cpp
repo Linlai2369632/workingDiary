@@ -32,7 +32,9 @@ searchsequence::searchsequence(QWidget *parent) :
     ui->tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("正在進行"));
     ui->tableWidget->setHorizontalHeaderItem(3, new QTableWidgetItem("待辦事項"));
 
-
+    // 設定表格的列寬以填滿視窗
+    ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 }
 
 searchsequence::~searchsequence()
@@ -226,6 +228,8 @@ void searchsequence::setTableFromDb()
             ui->tableWidget->insertRow(row);
             // 將日期插入到第一列
             QPushButton *dateButton = new QPushButton(date);
+            dateButton->setStyleSheet("background-color: #a6cdff;");
+            dateButton->setFont(QFont("Microsoft JhengHei", 10, QFont::Bold));
             connect(dateButton, &QPushButton::clicked, [=](){
                 QMessageBox messageBox;
                 if(QMessageBox::Yes == messageBox.question(this, "詢問", "是否開啟編輯視窗?", QMessageBox::Yes, QMessageBox::No)) {

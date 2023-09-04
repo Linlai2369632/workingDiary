@@ -14,10 +14,7 @@
 #include <QCloseEvent>
 #include <QShortcut>
 #include "searchsequence.h"
-#include <QHttpMultiPart>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QUrlQuery>
+#include <QCompleter>
 
 // 前置宣告 - 避免因為互相引用產生錯誤
 class searchsequence;
@@ -55,6 +52,8 @@ private:
 
     QString ToDo;
 
+    QStringList dateList;
+
     searchsequence *searchSeq;
 
 private:
@@ -62,9 +61,11 @@ private:
 
     bool createDatabase();
 
-    void setLabelRed();
+    void handleTextChanged();
 
     void setLabelBlack();
+
+    void setAutoFilled();
 
     bool hasUnsaveChanged();
 

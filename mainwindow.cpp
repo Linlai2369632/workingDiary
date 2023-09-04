@@ -49,8 +49,11 @@ MainWindow::MainWindow(QWidget *parent) :
     Date = currentDate.toString("yyyy-MM-dd");
     ui->leDate->setText(Date);
 
+    // 設置日期欄位自動補滿
+    setAutoFilled();
+
     // 設置當文字變動時，標簽文字轉為紅色提示
-    setLabelRed();
+    handleTextChanged();
 
     // 執行刪除操作
     /*QSqlDatabase db = QSqlDatabase::database();
@@ -102,7 +105,7 @@ bool MainWindow::hasUnsaveChanged()
     return false;
 }
 
-void MainWindow::setLabelRed()
+void MainWindow::handleTextChanged()
 {
     connect(ui->teProgress, &QTextEdit::textChanged, [this](){
         QPalette palette = ui->label->palette();
@@ -130,6 +133,30 @@ void MainWindow::setLabelBlack()
     ui->label_3->setPalette(palette);
 }
 
+void MainWindow::setAutoFilled()
+{
+    QSqlDatabase db = QSqlDatabase::database();
+    if(!db.isValid()) {
+        qDebug() << "Database connection is not valid.";
+        return;
+    }
+
+    QSqlQuery query;
+    if(query.exec("SELECT Date FROM diary")) {
+        while(query.next()) {
+            QString date = query.value(0).toString();
+            dateList.append(date);
+        }
+    }
+    else {
+        qDebug() << "Query failed:" << query.lastError().text();
+        return;
+    }
+
+    QCompleter *completer = new QCompleter(dateList, this);
+    ui->leDate->setCompleter(completer);
+}
+
 bool MainWindow::createDatabase()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -142,15 +169,18 @@ bool MainWindow::createDatabase()
 
     // 在資料庫中建立表格
     QSqlQuery query;
-    if(!query.exec("CREATE TABLE diary("
+    if(!query.exec("CREATE TABLE diary ("
                        "date TEXT PRIMARY KEY, "
                        "progress TEXT, "
                        "onGoing TEXT, "
                        "ToDo TEXT)")) {
         qDebug() << "Table creation error:" << query.lastError().text();
+        qDebug() << "建立表格失敗";
         return false;
     }
     qDebug() << "database create success";
+    db.close();
+
     return true;
 }
 
