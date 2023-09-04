@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pbSaveAndUpdate->setEnabled(false);
     ui->leDate->setPlaceholderText("yyyy-MM-dd");
     searchSeq = nullptr;
+    searchPro = nullptr;
 
     // 設置快捷鍵 ctrl + S
     QShortcut *shortCut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
@@ -135,9 +136,10 @@ void MainWindow::setLabelBlack()
 
 void MainWindow::setAutoFilled()
 {
+    dateList.clear();
     QSqlDatabase db = QSqlDatabase::database();
-    if(!db.isValid()) {
-        qDebug() << "Database connection is not valid.";
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
         return;
     }
 
@@ -155,6 +157,7 @@ void MainWindow::setAutoFilled()
 
     QCompleter *completer = new QCompleter(dateList, this);
     ui->leDate->setCompleter(completer);
+    db.close();
 }
 
 bool MainWindow::createDatabase()
@@ -324,6 +327,7 @@ void MainWindow::on_pbSearch_clicked()
         if(QMessageBox::Yes == messageBox.warning(this, "詢問", "當前資料庫無該日期資料，\n是否繼續進行?", QMessageBox::Yes, QMessageBox::No)) {
             // 在資料庫建立該日期資料
             InsertDb();
+            setAutoFilled();
         }
         else {
             return;
@@ -370,4 +374,10 @@ void MainWindow::on_pbSearchSequence_clicked()
        searchSeq->mainwindow->ui->leDate->setText(dateToSearch);
        searchSeq->mainwindow->ui->pbSearch->click();
     });
+}
+
+void MainWindow::on_pbProjectDiary_clicked()
+{
+    searchPro = new searchProject;
+    searchPro->show();
 }

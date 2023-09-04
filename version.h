@@ -12,6 +12,13 @@ table :diary
 3.onGoing TEXT
 4.ToDo TEXT
 
+table :projectDiary
+屬性:
+1.projectName TEXT primary key
+2.participateMember TEXT
+3.developeRecord TEXT
+4.todo TEXT
+
 2023-08-29:
   1.介面設計。
   2.建立空的資料庫和連接到資料庫。
@@ -43,6 +50,12 @@ table :diary
   6.searchsequence.cpp。tableWidget 日期欄位，雙擊開啟 mainwindow.ui，並自動填入日期進行搜尋。
 2023-09-03:
   1.在建構函式將未檢測到 db 時自動建立新的資料庫，改為詢問後建立。若不建立，則程序關閉。
+2023-09-04:
+  1.mainwindow 日期設置自動填滿。
+  2.修正: table 建立新資料後，應重新呼叫setAutoFilled()。
+  3.searchproject 進度:
+    (1)構造函數。
+    (2)在 table 建立新資料。
 
 正在進行:
 

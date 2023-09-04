@@ -13,8 +13,9 @@
 #include <QPalette>
 #include <QCloseEvent>
 #include <QShortcut>
-#include "searchsequence.h"
 #include <QCompleter>
+#include "searchsequence.h"
+#include "searchproject.h"
 
 // 前置宣告 - 避免因為互相引用產生錯誤
 class searchsequence;
@@ -41,6 +42,8 @@ private slots:
 
     void on_pbSearchSequence_clicked();
 
+    void on_pbProjectDiary_clicked();
+
 private:
     QString dbName = "workingDiary.db";
 
@@ -55,6 +58,8 @@ private:
     QStringList dateList;
 
     searchsequence *searchSeq;
+
+    searchProject *searchPro;
 
 private:
     Ui::MainWindow *ui;

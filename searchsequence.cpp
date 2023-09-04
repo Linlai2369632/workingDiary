@@ -56,8 +56,8 @@ void searchsequence::init()
 bool searchsequence::importDateFromDb()
 {
     QSqlDatabase db = QSqlDatabase::database();
-    if(!db.isValid()) {
-        qDebug() << "Database connection is not valid.";
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
         return false;
     }
 
@@ -76,6 +76,7 @@ bool searchsequence::importDateFromDb()
     foreach (QString Date, dateList) {
         qDebug() << Date;
     }
+    db.close();
     return true;
 }
 
