@@ -5,19 +5,20 @@
 
 資料庫屬性:
 類型:SQLITE
-table :diary
+#table :diary
 屬性 :
 1.date TEXT primary key
 2.progress TEXT
 3.onGoing TEXT
 4.ToDo TEXT
 
-table :projectDiary
+#table :projectDiary
 屬性:
 1.projectName TEXT primary key
-2.participateMember TEXT
-3.developeRecord TEXT
-4.todo TEXT
+2.projectInformation TEXT
+3.participateMember TEXT
+4.developeRecord TEXT
+5.todo TEXT
 
 2023-08-29:
   1.介面設計。
@@ -55,7 +56,24 @@ table :projectDiary
   2.修正: table 建立新資料後，應重新呼叫setAutoFilled()。
   3.searchproject 進度:
     (1)構造函數。
-    (2)在 table 建立新資料。
+    (2)完成在 table 建立新資料。(button:建立)
+2023-09-05:
+  1.searchProject: 更新按鈕默認不可選，只有在專案名稱存在 projectNameList 後才可選。
+    >建立成功後，更新按鈕設為可選。
+  2.db.open 的地方補加上 db.close。
+  3.searchProject: 完成查詢功能。
+  4.修正錯誤: searchProject: workindDiary table 缺少 projectInformation 欄位。
+  5.searchProject: 完成更新功能。
+  6.searchProject: 修正建立專案時去掉頭尾空白之後的一些問題:
+    >>QMessaheBox 的訊息格式。
+    >>QLineEdit 的訊息格式。
+  7.新增 searchProject 的 QLineEdit 题示訊息。
+  8.searchProject: 快捷鍵 CTRL + S 設計。
+  9.searchProject: 完成查詢功能。"檢查是否有尚未儲存的變更"。
+  10.searchProject:內容變動時，Label 顏色設為紅色。
+  11.maindow:將"本日進度"，"正在進行"，"待辦事項"的方框改為直立式。
+  12.mainwindow:在已經查詢的情況下，將查詢 button text 改為:"重新查詢"，並更改 pbSaved enabled 的設定。
+
 
 正在進行:
 
@@ -65,7 +83,8 @@ table :projectDiary
 
 失敗:
 -加密 db 或 table。(失敗:Qt 不支援 database 加密)。
--將 .db 上傳到雲端。
+-將 .db 上傳到雲端。需再想想有什麼辦法使存取 .db 更方便。
+    (Google-Drive, FTP)
 
 */
 

@@ -11,6 +11,7 @@
 #include <QCompleter>
 //#include <QDate>
 #include <QPalette>
+#include <QShortcut>
 
 namespace Ui {
 class searchProject;
@@ -27,6 +28,10 @@ public:
 private slots:
     void on_pbCreate_clicked();
 
+    void on_pbSearch_clicked();
+
+    void on_pbUpdate_clicked();
+
 private:
     QString dbName = "workingDiary.db";
 
@@ -39,11 +44,21 @@ private:
 
     bool initDbTable();
 
+    void handleTextChanged();
+
+    void setLabelBlack();
+
+    bool hasUnsaveChanged();
+
     bool importProjectNameFromDb();
 
     void setAutoFilled();
 
     bool InsertDb();
+
+    void triggerUpdateButton();
+
+    void deleteTable();
 };
 
 #endif // SEARCHPROJECT_H

@@ -70,6 +70,7 @@ bool searchsequence::importDateFromDb()
     }
     else {
         qDebug() << "Query failed:" << query.lastError().text();
+        db.close();
         return false;
     }
 
@@ -197,8 +198,8 @@ void searchsequence::getSequenceDate()
 void searchsequence::setTableFromDb()
 {
     QSqlDatabase db = QSqlDatabase::database();
-    if(!db.isValid()) {
-        qDebug() << "Database connection is not valid.";
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
         return;
     }
 
@@ -209,7 +210,8 @@ void searchsequence::setTableFromDb()
 
         if(!query.exec()) {
             qDebug() << "Query error:" << query.lastError().text();
-             return;
+            db.close();
+            return;
         }
 
         if(query.next()) {
@@ -252,6 +254,7 @@ void searchsequence::setTableFromDb()
             ui->tableWidget->setItem(row, 3, new QTableWidgetItem(todos));
         }
     }
+    db.close();
 }
 
 void searchsequence::on_pbSearch_clicked()

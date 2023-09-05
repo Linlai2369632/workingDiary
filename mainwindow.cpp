@@ -152,6 +152,7 @@ void MainWindow::setAutoFilled()
     }
     else {
         qDebug() << "Query failed:" << query.lastError().text();
+        db.close();
         return;
     }
 
@@ -195,8 +196,8 @@ void MainWindow::InsertDb()
     ToDo = ui->teToDo->toPlainText();
 
     QSqlDatabase db = QSqlDatabase::database();
-    if(!db.isValid()) {
-        qDebug() << "Database connection is not valid.";
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
         return;
     }
 
@@ -213,6 +214,7 @@ void MainWindow::InsertDb()
     } else {
         qDebug() << "Data inserted.";
     }
+    db.close();
 }
 
 void MainWindow::updateDb()
@@ -223,8 +225,8 @@ void MainWindow::updateDb()
    ToDo = ui->teToDo->toPlainText();
 
    QSqlDatabase db = QSqlDatabase::database();
-   if(!db.isValid()) {
-       qDebug() << "Database connection is not valid";
+   if(!db.open()) {
+       qDebug() << "Database error:" << db.lastError().text();
        return;
    }
 
@@ -240,6 +242,7 @@ void MainWindow::updateDb()
    } else {
        qDebug() << "Data updated.";
    }
+   db.close();
 
    QMessageBox messageBox;
    messageBox.information(this, "提示", "資料儲存成功");
@@ -250,8 +253,8 @@ void MainWindow::updateDb()
 bool MainWindow::CheckIfExist()
 {
     QSqlDatabase db = QSqlDatabase::database();
-    if(!db.isValid()) {
-        qDebug() << "Database connection is not valid";
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
         return false;
     }
 
@@ -261,14 +264,17 @@ bool MainWindow::CheckIfExist()
 
     if(!query.exec()) {
         qDebug() << "Query error:" << query.lastError().text();
-         return false;
+        db.close();
+        return false;
     }
 
     if(query.next()) {
         qDebug() << "Data found for date:" << Date;
+        db.close();
         return true;
     } else {
         qDebug() << "Data not found for date:" << Date;
+        db.close();
         return false;
     }
 }
@@ -314,6 +320,13 @@ void MainWindow::on_pbSearch_clicked()
     ui->teToDo->clear();
     setLabelBlack();
 
+    if(ui->pbSearch->text() == "重新查詢") {
+        ui->pbSearch->setText("查詢");
+        ui->leDate->setEnabled(true);
+        ui->pbSaveAndUpdate->setEnabled(false);
+        return;
+    }
+
     // 檢查日期輸入格式是否正確
     Date = ui->leDate->text();
     if(!QDate::fromString(Date, "yyyy-MM-dd").isValid()) {
@@ -335,8 +348,8 @@ void MainWindow::on_pbSearch_clicked()
     }
     // 從資料庫讀取資料
     QSqlDatabase db = QSqlDatabase::database();
-    if(!db.isValid()) {
-        qDebug() << "Database connection is not valid";
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
         return;
     }
 
@@ -346,7 +359,8 @@ void MainWindow::on_pbSearch_clicked()
 
     if(!query.exec()) {
         qDebug() << "Query error:" << query.lastError().text();
-         return;
+        db.close();
+        return;
     }
 
     if(query.next()) {
@@ -357,12 +371,15 @@ void MainWindow::on_pbSearch_clicked()
         ui->teOnGoing->setPlainText(ongoing);
         ui->teToDo->setPlainText(todos);
     }
+    db.close();
 
     ui->teOnGoing->setEnabled(true);
     ui->teProgress->setEnabled(true);
     ui->teToDo->setEnabled(true);
     ui->pbSaveAndUpdate->setEnabled(true);
     setLabelBlack();
+    ui->pbSearch->setText("重新查詢");
+    ui->leDate->setEnabled(false);
 }
 
 void MainWindow::on_pbSearchSequence_clicked()
