@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->teProgress->setEnabled(false);
     ui->teToDo->setEnabled(false);
     ui->pbSaveAndUpdate->setEnabled(false);
+    ui->pbDelete->setEnabled(false);
+    ui->pbDelete->setEnabled(false);
     ui->leDate->setPlaceholderText("yyyy-MM-dd");
     searchSeq = nullptr;
     searchPro = nullptr;
@@ -90,6 +92,30 @@ void MainWindow::closeEvent(QCloseEvent *event)
     else {
         event->accept();
     }
+}
+
+void MainWindow::setUI2SearchMode()
+{
+    ui->pbSearch->setText("查詢");
+    ui->leDate->setEnabled(true);
+    ui->pbSaveAndUpdate->setEnabled(false);
+    ui->pbDelete->setEnabled(false);
+    ui->teOnGoing->setEnabled(false);
+    ui->teProgress->setEnabled(false);
+    ui->teToDo->setEnabled(false);
+    setLabelBlack();
+}
+
+void MainWindow::setUI2ResearchMode()
+{
+    ui->pbSearch->setText("重新查詢");
+    ui->leDate->setEnabled(false);
+    ui->pbSaveAndUpdate->setEnabled(true);
+    ui->pbDelete->setEnabled(true);
+    ui->teOnGoing->setEnabled(true);
+    ui->teProgress->setEnabled(true);
+    ui->teToDo->setEnabled(true);
+    setLabelBlack();
 }
 
 bool MainWindow::hasUnsaveChanged()
@@ -215,6 +241,8 @@ void MainWindow::InsertDb()
         qDebug() << "Data inserted.";
     }
     db.close();
+    QMessageBox messageBox;
+    messageBox.information(this, "题示", "建立成功!");
 }
 
 void MainWindow::updateDb()
@@ -315,15 +343,8 @@ void MainWindow::on_pbSearch_clicked()
         }
     }
 
-    ui->teOnGoing->clear();
-    ui->teProgress->clear();
-    ui->teToDo->clear();
-    setLabelBlack();
-
     if(ui->pbSearch->text() == "重新查詢") {
-        ui->pbSearch->setText("查詢");
-        ui->leDate->setEnabled(true);
-        ui->pbSaveAndUpdate->setEnabled(false);
+        setUI2SearchMode();
         return;
     }
 
@@ -337,7 +358,7 @@ void MainWindow::on_pbSearch_clicked()
     // 從資料庫檢索是否存在該日期資料
     if(!CheckIfExist()) {
         QMessageBox messageBox;
-        if(QMessageBox::Yes == messageBox.warning(this, "詢問", "當前資料庫無該日期資料，\n是否繼續進行?", QMessageBox::Yes, QMessageBox::No)) {
+        if(QMessageBox::Yes == messageBox.warning(this, "詢問", "當前資料庫無該日期資料，\n是否建立?", QMessageBox::Yes, QMessageBox::No)) {
             // 在資料庫建立該日期資料
             InsertDb();
             setAutoFilled();
@@ -373,13 +394,7 @@ void MainWindow::on_pbSearch_clicked()
     }
     db.close();
 
-    ui->teOnGoing->setEnabled(true);
-    ui->teProgress->setEnabled(true);
-    ui->teToDo->setEnabled(true);
-    ui->pbSaveAndUpdate->setEnabled(true);
-    setLabelBlack();
-    ui->pbSearch->setText("重新查詢");
-    ui->leDate->setEnabled(false);
+    setUI2ResearchMode();
 }
 
 void MainWindow::on_pbSearchSequence_clicked()
@@ -397,4 +412,36 @@ void MainWindow::on_pbProjectDiary_clicked()
 {
     searchPro = new searchProject;
     searchPro->show();
+}
+
+void MainWindow::on_pbDelete_clicked()
+{
+    QMessageBox messageBox;
+    if(QMessageBox::No == messageBox.warning(this, "詢問", "請再次確認是否刪除該日期所有資料?", QMessageBox::Yes, QMessageBox::No)) {
+        return;
+    }
+
+    Date = ui->leDate->text();
+    QSqlDatabase db = QSqlDatabase::database();
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
+        return;
+    }
+    QSqlQuery query;
+    query.prepare("DELETE FROM diary WHERE date = :date");
+    query.bindValue(":date", Date);
+    if(!query.exec()) {
+        qDebug() << "Query error:" << query.lastError().text();
+        db.close();
+        return;
+    }
+    else {
+        QMessageBox messageBox;
+        messageBox.information(this, "提示", "資料刪除成功!");
+        qDebug() << "delete Success!";
+    }
+    ui->teProgress->clear();
+    ui->teOnGoing->clear();
+    ui->teToDo->clear();
+    setUI2SearchMode();
 }

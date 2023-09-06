@@ -73,13 +73,24 @@
   10.searchProject:內容變動時，Label 顏色設為紅色。
   11.maindow:將"本日進度"，"正在進行"，"待辦事項"的方框改為直立式。
   12.mainwindow:在已經查詢的情況下，將查詢 button text 改為:"重新查詢"，並更改 pbSaved enabled 的設定。
+2023-09-06:
+  1.searchProject: 設計 setUI2SearchMode();和 setUI2ResearchMode();來幫助使用者流暢的使用各項功能。
+  2.searchProject: 取消使用 "更新" button ，偵測專案是否存來來 enabled 的方式。
+  3.searchproject: "建立" 成功後，UI 介面應等同於"查詢"被按下。
+  4.searchProject: 修正錯誤，pbCreate()中， messageBox("再次確認是否建立專案\n\"%1\"?")，選擇"No"後會直接切到查詢後的 UI 模式。
+  5.searchProject: 設計 closeEvent();
+  6.mainwindow: 調整 "搜尋" 後的介面操作，使其更加合理。
+  7.workingDiary: 增加刪除功能。
+  8.searchProject: 新增一個 "查看" button，和 projecttable.ui。使其顯示資料庫中所有已存在的專案資訊。並可點擊 "專案名稱" 前往該專案之編輯介面。
+
+
 
 
 正在進行:
 
 
 待辦:
--新增一個 PprojectDiary 板塊，用來記錄不同 project 的進程和待辦事項。
+-複製不同的字體格式時會保留複製時的字體。
 
 失敗:
 -加密 db 或 table。(失敗:Qt 不支援 database 加密)。

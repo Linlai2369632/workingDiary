@@ -44,6 +44,8 @@ private slots:
 
     void on_pbProjectDiary_clicked();
 
+    void on_pbDelete_clicked();
+
 private:
     QString dbName = "workingDiary.db";
 
@@ -75,6 +77,10 @@ private:
     bool hasUnsaveChanged();
 
     bool CheckIfExist();
+
+    void setUI2SearchMode();
+
+    void setUI2ResearchMode();
 
     void InsertDb();
 

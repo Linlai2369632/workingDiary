@@ -7,8 +7,10 @@ searchProject::searchProject(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("專案進度管理");
+    proTable = nullptr;
 
     ui->pbUpdate->setEnabled(false);
+    ui->pbDelete->setEnabled(false);
     ui->leProjectName->setPlaceholderText("前後不留白，區分大小寫");
 
     if(!initDbTable()) {
@@ -23,9 +25,6 @@ searchProject::searchProject(QWidget *parent) :
         setAutoFilled();
     }
 
-    // button 變為可選的觸發條件
-    triggerUpdateButton();
-
     // 設置 CTRL + S 快捷鍵
     QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
     connect(shortcut, &QShortcut::activated, ui->pbUpdate, &QPushButton::click);
@@ -37,6 +36,24 @@ searchProject::searchProject(QWidget *parent) :
 searchProject::~searchProject()
 {
     delete ui;
+}
+
+void searchProject::closeEvent(QCloseEvent *event)
+{
+    // 檢測退出時是否有尚未儲存的變更
+    if(hasUnsaveChanged()) {
+        QMessageBox messageBox;
+        if(QMessageBox::Yes == messageBox.warning(this, "警告", "檢測到未儲存變更\n是否繼續退出?", QMessageBox::Yes , QMessageBox::No)) {
+            // 用戶選擇繼續退出
+            event->accept();
+        }
+        else {
+            event->ignore();
+        }
+    }
+    else {
+        event->accept();
+    }
 }
 
 void searchProject::deleteTable()
@@ -187,6 +204,26 @@ bool searchProject::hasUnsaveChanged()
     return false;
 }
 
+void searchProject::setUI2SearchMode()
+{
+    ui->pbSearch->setText("查詢");
+    ui->leProjectName->setEnabled(true);
+    ui->pbCreate->setEnabled(true);
+    ui->pbUpdate->setEnabled(false);
+    ui->pbDelete->setEnabled(false);
+    setLabelBlack();
+}
+
+void searchProject::setUI2ResearchMode()
+{
+    ui->pbSearch->setText("重新查詢");
+    ui->leProjectName->setEnabled(false);
+    ui->pbCreate->setEnabled(false);
+    ui->pbUpdate->setEnabled(true);
+    ui->pbDelete->setEnabled(true);
+    setLabelBlack();
+}
+
 bool searchProject::InsertDb()
 {
     QString projectInformation = ui->teProjectInformation->toPlainText();
@@ -220,19 +257,6 @@ bool searchProject::InsertDb()
     return true;
 }
 
-void searchProject::triggerUpdateButton()
-{
-    connect(ui->leProjectName, &QLineEdit::textChanged, [this](){
-       QString proName = ui->leProjectName->text();
-       if(projectNameList.contains(proName)) {
-           ui->pbUpdate->setEnabled(true);
-       }
-       else {
-           ui->pbUpdate->setEnabled(false);
-       }
-    });
-}
-
 void searchProject::on_pbCreate_clicked()
 {
     if(ui->leProjectName->text().isEmpty()) {
@@ -254,6 +278,9 @@ void searchProject::on_pbCreate_clicked()
     QMessageBox messageBox;
     QString mas = QString("再次確認是否建立專案\n\"%1\"?").arg(projectName);
     if(QMessageBox::No == messageBox.question(this, "詢問", mas, QMessageBox::Yes, QMessageBox::No)) {
+        if(ui->pbSearch->text() == "重新查詢") {
+            return;
+        }
         return;
     }
 
@@ -265,14 +292,15 @@ void searchProject::on_pbCreate_clicked()
     }
     // 在 database 建立
     if(InsertDb()) {
-        importProjectNameFromDb();
-        setAutoFilled();
-        ui->leProjectName->setText(projectName);
-        ui->pbUpdate->setEnabled(true);
-        setLabelBlack();
         QMessageBox messageBox;
         messageBox.information(this, "提示", "專案建立成功!");
     }
+    // 更新自動填滿清單
+    importProjectNameFromDb();
+    setAutoFilled();
+    ui->leProjectName->setText(projectName);
+    // set UI control
+    setUI2ResearchMode();
 }
 
 void searchProject::on_pbSearch_clicked()
@@ -285,13 +313,21 @@ void searchProject::on_pbSearch_clicked()
         }
     }
 
+    // 將 UI 設為 "重新查詢"
+    if(ui->pbSearch->text() == "重新查詢") {
+        setUI2SearchMode();
+        return;
+    }
+
     // 檢查專案是否存在，若不存在則詢問是否建立
     projectName = ui->leProjectName->text();
     projectName = projectName.trimmed();
+    ui->leProjectName->setText(projectName);
     if(!projectNameList.contains(projectName)) {
         QMessageBox messageBox;
         if(QMessageBox::Yes == messageBox.question(this, "詢問", "未搜尋到該專案\n是否建立?", QMessageBox::Yes, QMessageBox::No)) {
             emit ui->pbCreate->click();
+            return;
         }
         else {
             return;
@@ -325,7 +361,9 @@ void searchProject::on_pbSearch_clicked()
         ui->teToDo->setPlainText(todo);
     }
     db.close();
-    setLabelBlack();
+
+    // 將 UI 設為 "重新查詢"
+    setUI2ResearchMode();
 }
 
 void searchProject::on_pbUpdate_clicked()
@@ -368,4 +406,47 @@ void searchProject::on_pbUpdate_clicked()
     }
     db.close();
     setLabelBlack();
+}
+
+void searchProject::on_pbDelete_clicked()
+{
+    QMessageBox messageBox;
+    if(QMessageBox::No == messageBox.warning(this, "詢問", "請再次確認是否刪除該專案資料?", QMessageBox::Yes, QMessageBox::No)) {
+        return;
+    }
+
+    projectName = ui->leProjectName->text();
+    QSqlDatabase db = QSqlDatabase::database();
+    if(!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
+        return;
+    }
+    QSqlQuery query;
+    query.prepare("DELETE FROM projectDiary WHERE projectName = :projectName");
+    query.bindValue(":projectName", projectName);
+    if(!query.exec()) {
+        qDebug() << "Query error:" << query.lastError().text();
+        db.close();
+        return;
+    }
+    else {
+        QMessageBox messageBox;
+        messageBox.information(this, "提示", "資料刪除成功!");
+        qDebug() << "delete Success!";
+    }
+    ui->teDevelopeRecord->clear();
+    ui->teParticipateMember->clear();
+    ui->teProjectInformation->clear();
+    ui->teToDo->clear();
+    setUI2SearchMode();
+}
+
+void searchProject::on_pbShowAllProjectName_clicked()
+{
+    proTable = new ProjectTable;
+    proTable->show();
+    connect(proTable, &ProjectTable::setProjectName, [this](QString projectName){
+        proTable->searchPro->ui->leProjectName->setText(projectName);
+        proTable->searchPro->ui->pbSearch->click();
+    });
 }
