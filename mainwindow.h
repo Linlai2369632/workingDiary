@@ -14,6 +14,7 @@
 #include <QCloseEvent>
 #include <QShortcut>
 #include <QCompleter>
+#include <QFile>
 #include "searchsequence.h"
 #include "searchproject.h"
 
@@ -85,8 +86,6 @@ private:
     void InsertDb();
 
     void updateDb();
-
-    void uploadDatebase();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

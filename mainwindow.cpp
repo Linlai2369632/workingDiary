@@ -44,8 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
         if (!db.open()) {
             qDebug() << "Database error:" << db.lastError().text();
         }
-
         qDebug() << "Database connected.";
+        db.close();
     }
 
     QDate currentDate = QDate::currentDate();
@@ -58,17 +58,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // 設置當文字變動時，標簽文字轉為紅色提示
     handleTextChanged();
 
-    // 執行刪除操作
-    /*QSqlDatabase db = QSqlDatabase::database();
-    QSqlQuery query;
-    QString deleteQuery = "DELETE FROM diary WHERE date = '2023-07-07'";
-    if (query.exec(deleteQuery)) {
-        qDebug() << "成功刪除數據";
-    } else {
-        qDebug() << "刪除數據失敗: " << query.lastError().text();
-    }
-    // 關閉數據庫連接
-    db.close()*/;
 }
 
 MainWindow::~MainWindow()
@@ -86,10 +75,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
             event->accept();
         }
         else {
+            QMessageBox messageBox;
+            messageBox.information(this, "溫馨提醒", "請記得備份 workingDiary.db 喔!\n~^w^~\n\t~^w^~\n\t\t~^w^~");
             event->ignore();
         }
     }
     else {
+        QMessageBox messageBox;
+        messageBox.information(this, "溫馨提醒", "請記得備份 workingDiary.db 喔!\n~^w^~\n\t~^w^~\n\t\t~^w^~");
         event->accept();
     }
 }
