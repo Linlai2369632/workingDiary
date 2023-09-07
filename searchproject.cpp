@@ -211,6 +211,10 @@ void searchProject::setUI2SearchMode()
     ui->pbCreate->setEnabled(true);
     ui->pbUpdate->setEnabled(false);
     ui->pbDelete->setEnabled(false);
+    ui->teDevelopeRecord->clear();
+    ui->teParticipateMember->clear();
+    ui->teProjectInformation->clear();
+    ui->teToDo->clear();
     setLabelBlack();
 }
 

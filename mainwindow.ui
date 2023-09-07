@@ -75,6 +75,12 @@
       <height>541</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <property name="font">
      <font>
       <family>微軟正黑體</family>
@@ -97,6 +103,12 @@ color: rgb(0, 0, 0);</string>
       <height>541</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <property name="font">
      <font>
       <family>微軟正黑體</family>
@@ -118,6 +130,12 @@ color: rgb(0, 0, 0);</string>
       <width>371</width>
       <height>541</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="font">
      <font>
