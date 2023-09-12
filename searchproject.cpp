@@ -11,6 +11,10 @@ searchProject::searchProject(QWidget *parent) :
 
     ui->pbUpdate->setEnabled(false);
     ui->pbDelete->setEnabled(false);
+    ui->teDevelopeRecord->setAcceptRichText(false);
+    ui->teParticipateMember->setAcceptRichText(false);
+    ui->teProjectInformation->setAcceptRichText(false);
+    ui->teToDo->setAcceptRichText(false);
     ui->leProjectName->setPlaceholderText("前後不留白，區分大小寫");
 
     if(!initDbTable()) {

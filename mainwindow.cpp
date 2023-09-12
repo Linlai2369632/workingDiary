@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pbSaveAndUpdate->setEnabled(false);
     ui->pbDelete->setEnabled(false);
     ui->pbDelete->setEnabled(false);
+    ui->teProgress->setAcceptRichText(false);
+    ui->teOnGoing->setAcceptRichText(false);
+    ui->teToDo->setAcceptRichText(false);
     ui->leDate->setPlaceholderText("yyyy-MM-dd");
     searchSeq = nullptr;
     searchPro = nullptr;
@@ -96,6 +99,9 @@ void MainWindow::setUI2SearchMode()
     ui->teOnGoing->setEnabled(false);
     ui->teProgress->setEnabled(false);
     ui->teToDo->setEnabled(false);
+    ui->teOnGoing->clear();
+    ui->teProgress->clear();
+    ui->teToDo->clear();
     setLabelBlack();
 }
 
@@ -127,7 +133,7 @@ bool MainWindow::hasUnsaveChanged()
 
 void MainWindow::handleTextChanged()
 {
-    connect(ui->teProgress, &QTextEdit::textChanged, [this](){
+    connect(ui->teProgress, &QTextEdit::textChanged, [&](){
         QPalette palette = ui->label->palette();
         palette.setColor(QPalette::WindowText, Qt::red);
         ui->label->setPalette(palette);
