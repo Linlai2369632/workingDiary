@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>cat.ico</file>
+        <file>skype.ico</file>
     </qresource>
 </RCC>

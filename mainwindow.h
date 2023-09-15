@@ -15,8 +15,11 @@
 #include <QShortcut>
 #include <QCompleter>
 #include <QFile>
+#include <QProcess>
+#include <QThread>
 #include "searchsequence.h"
 #include "searchproject.h"
+
 
 // 前置宣告 - 避免因為互相引用產生錯誤
 class searchsequence;
@@ -46,6 +49,8 @@ private slots:
     void on_pbProjectDiary_clicked();
 
     void on_pbDelete_clicked();
+
+    void on_pbUploadToSkype_clicked();
 
 private:
     QString dbName = "workingDiary.db";

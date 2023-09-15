@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->leDate->setPlaceholderText("yyyy-MM-dd");
     searchSeq = nullptr;
     searchPro = nullptr;
+    ui->pbUploadToSkype->setIcon(QIcon(":/skype.ico"));
 
     // 設置快捷鍵 ctrl + S
     QShortcut *shortCut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
@@ -443,4 +444,38 @@ void MainWindow::on_pbDelete_clicked()
     ui->teOnGoing->clear();
     ui->teToDo->clear();
     setUI2SearchMode();
+}
+
+void MainWindow::on_pbUploadToSkype_clicked()
+{
+    // 檢查文件是否存在
+    QString program = "UploadSkype/skype.exe";
+    QString programUi = "UploadSkype/skypeuploader.ui";
+    qDebug() << "program 路徑：" << program;
+    QMessageBox messageBox;
+    if(!QFile::exists(program)) {
+        messageBox.warning(this, "警告", "文件缺失:" + program);
+        return;
+    }
+    if(!QFile::exists(programUi)) {
+        messageBox.warning(this, "警告", "文件缺失:" + programUi);
+        return;
+    }
+    // 外部程序執行時會造成主程序阻塞，加入線程來避免此情形發生。
+    QThread *thread = new QThread(this);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect(thread, &QThread::started, [this, thread, program](){
+        QProcess process;
+        process.setWorkingDirectory("UploadSkype");
+        process.start(program);
+        if(process.waitForStarted()) {
+            qDebug() << "應用程序已成功啟動";
+            process.waitForFinished();
+        }
+        else {
+            qDebug() << "無法啟動應用程序";
+        }
+        thread->quit();
+    });
+    thread->start();
 }
