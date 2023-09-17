@@ -87,6 +87,8 @@
   2.workingDiary:點擊重新搜尋後，清空介面。
 2023-09-15:
   1.新增備份資料庫到 Skype 群組的功能。
+2023-09-17:
+  1.mainwindow.ui 和 searchproject.ui 設置 Enter 的快捷鍵。
 
 
 

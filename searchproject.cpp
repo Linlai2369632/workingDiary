@@ -33,6 +33,9 @@ searchProject::searchProject(QWidget *parent) :
     QShortcut *shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
     connect(shortcut, &QShortcut::activated, ui->pbUpdate, &QPushButton::click);
 
+    // 設置快捷鍵 Enter
+    connect(ui->leProjectName, &QLineEdit::returnPressed, ui->pbSearch, &QPushButton::click);
+
     // 設置提醒使用者有尚未儲存的變動
     handleTextChanged();
 }

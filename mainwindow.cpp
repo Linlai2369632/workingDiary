@@ -24,8 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pbUploadToSkype->setIcon(QIcon(":/skype.ico"));
 
     // 設置快捷鍵 ctrl + S
-    QShortcut *shortCut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
-    connect(shortCut, &QShortcut::activated, ui->pbSaveAndUpdate, &QPushButton::click);
+    QShortcut *shortCutCtrlS = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
+    connect(shortCutCtrlS, &QShortcut::activated, ui->pbSaveAndUpdate, &QPushButton::click);
+
+    // 設置快捷鍵 Enter
+    connect(ui->leDate, &QLineEdit::returnPressed, ui->pbSearch, &QPushButton::click);
 
     // 檢查資料庫是否已存在
     if(!QFileInfo::exists(dbName)) {
